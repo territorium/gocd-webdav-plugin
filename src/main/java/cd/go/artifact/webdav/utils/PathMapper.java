@@ -18,6 +18,8 @@ package cd.go.artifact.webdav.utils;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,6 +65,10 @@ public class PathMapper {
    * @param target
    */
   public String remap(String target) {
+    if (target.contains("$BUILD")) {
+      long value = OffsetDateTime.now().toInstant().getEpochSecond() - Instant.EPOCH.getEpochSecond();
+      target = target.replace("$BUILD", "" + (value / (60 * 60 * 24)));
+    }
     for (int index = 0; index < groups.size(); index++) {
       target = target.replace("$" + (index + 1), groups.get(index));
     }

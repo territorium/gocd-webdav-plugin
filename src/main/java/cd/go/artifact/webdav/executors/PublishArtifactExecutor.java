@@ -73,6 +73,7 @@ public class PublishArtifactExecutor implements RequestExecutor {
 
       List<PathMapper> match = PathMapper.list(workingDir, sourceFile);
       if (!match.isEmpty()) {
+        path = match.get(0).remap(path);
         File file = match.get(0).toFile();
         if (file.isFile()) {
           webdav.uploadFile(path, file);
