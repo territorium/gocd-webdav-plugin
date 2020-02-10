@@ -12,24 +12,23 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.model;
+package cd.go.artifact.webdav;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 
-public class FetchArtifact {
+import java.util.Collections;
 
-  @Expose
-  @SerializedName("artifact_id")
-  private String artifactId;
+public interface Global {
 
-  public FetchArtifact() {}
+  // The type of this extension
+  String EXTENSION_TYPE = "artifact";
 
-  public FetchArtifact(String artifactId) {
-    this.artifactId = artifactId;
-  }
+  // The extension point API version that this plugin understands
+  String API_VERSION = "1.0";
 
-  public String getArtifactId() {
-    return artifactId;
-  }
+  // the identifier of this plugin
+  GoPluginIdentifier PLUGIN_IDENTIFIER = new GoPluginIdentifier(EXTENSION_TYPE, Collections.singletonList(API_VERSION));
+
+
+  String SEND_CONSOLE_LOG = "go.processor.artifact.console-log";
 }

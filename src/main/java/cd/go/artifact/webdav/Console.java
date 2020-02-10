@@ -12,24 +12,13 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.model;
+package cd.go.artifact.webdav;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+public interface Console {
 
-public class FetchArtifact {
+  public void info(String message, Object... arguments);
 
-  @Expose
-  @SerializedName("artifact_id")
-  private String artifactId;
+  public void error(String message, Object... arguments);
 
-  public FetchArtifact() {}
-
-  public FetchArtifact(String artifactId) {
-    this.artifactId = artifactId;
-  }
-
-  public String getArtifactId() {
-    return artifactId;
-  }
+  public void logStackTrace(Exception exception, String message, Object... arguments);
 }

@@ -12,9 +12,8 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.utils;
+package cd.go.artifact.webdav;
 
-import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 
@@ -24,33 +23,31 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-
-import cd.go.artifact.webdav.ConsoleLogger;
 
 public class WebDAV {
 
-  private final Sardine       sardine;
-  private final ConsoleLogger logger;
+  private final Console console;
+  private final Sardine sardine;
 
-
-  public WebDAV(Sardine sardine, ConsoleLogger logger) {
-    this.sardine = sardine;
-    this.logger = logger;
+  public WebDAV(Console console, String username, String password) {
+    this.console = console;
+    this.sardine = SardineFactory.begin(username, password);;
   }
 
-
-  public final Sardine getSardine() {
+  protected final Sardine getSardine() {
     return sardine;
   }
 
+  protected final Console getConsole() {
+    return console;
+  }
 
-  public final ConsoleLogger getConsole() {
-    return logger;
+  public final InputStream getStream(String url) throws IOException {
+    return getSardine().get(url);
   }
 
   public final void uploadFile(String url, File file) throws IOException {
-    getConsole().info(String.format("Upload file %s", url));
+    getConsole().info("Upload file %s", url);
 
     try (InputStream stream = new FileInputStream(file)) {
       byte[] data = IOUtils.toByteArray(stream);
@@ -84,24 +81,16 @@ public class WebDAV {
     }
   }
 
-
   private boolean createDirectory(String resource) {
     try {
       if (!getSardine().exists(resource)) {
-        getConsole().info("Create directory " + resource);
+        getConsole().info("Create directory %s", resource);
         getSardine().createDirectory(resource);
         return true;
       }
     } catch (IOException e) {
-      WebDAV.printStackTrace(getConsole(), e, "Couldn't create directory %s", resource);
+      getConsole().logStackTrace(e, "Couldn't create directory %s", resource);
     }
     return false;
-  }
-
-  public static void printStackTrace(ConsoleLogger console, Exception exception, String message, Object... arguments) {
-    console.error(String.format(message, arguments));
-    for (StackTraceElement stackTraceElement : exception.getStackTrace()) {
-      console.error("   at: " + stackTraceElement.toString());
-    }
   }
 }

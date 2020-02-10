@@ -12,24 +12,14 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.model;
+package cd.go.artifact.webdav;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.Gson;
+import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-public class FetchArtifact {
+public interface RequestHandler {
 
-  @Expose
-  @SerializedName("artifact_id")
-  private String artifactId;
+  Gson GSON = new Gson();
 
-  public FetchArtifact() {}
-
-  public FetchArtifact(String artifactId) {
-    this.artifactId = artifactId;
-  }
-
-  public String getArtifactId() {
-    return artifactId;
-  }
+  GoPluginApiResponse execute() throws Exception;
 }

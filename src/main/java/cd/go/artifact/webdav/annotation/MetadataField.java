@@ -12,24 +12,22 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.model;
+package cd.go.artifact.webdav.annotation;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class FetchArtifact {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MetadataField {
 
-  @Expose
-  @SerializedName("artifact_id")
-  private String artifactId;
+  String key();
 
-  public FetchArtifact() {}
+  boolean required() default false;
 
-  public FetchArtifact(String artifactId) {
-    this.artifactId = artifactId;
-  }
+  boolean secure() default false;
 
-  public String getArtifactId() {
-    return artifactId;
-  }
+  MetadataType type() default MetadataType.STRING;
 }
