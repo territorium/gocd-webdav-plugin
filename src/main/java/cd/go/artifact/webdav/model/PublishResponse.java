@@ -37,8 +37,8 @@ import java.util.Map;
  */
 public class PublishResponse {
 
-  private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().serializeNulls().create();
-
+  private static final Gson   GSON     =
+      new GsonBuilder().excludeFieldsWithoutExposeAnnotation().serializeNulls().create();
 
   @Expose
   @SerializedName("metadata")

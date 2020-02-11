@@ -12,10 +12,11 @@
  * the License.
  */
 
-package cd.go.artifact.webdav;
+package cd.go.artifact;
 
 import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
+import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.DefaultGoApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoApiResponse;
@@ -24,11 +25,20 @@ import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 
 class ConsoleLogger implements Console {
 
+  private final String                name;
+  private final String                version;
+  private final GoPluginIdentifier    identifier;
+
   private final Logger                logger;
   private final GoApplicationAccessor accessor;
 
-  private ConsoleLogger(Logger logger, GoApplicationAccessor accessor) {
+
+  protected ConsoleLogger(String name, Logger logger, String version, GoPluginIdentifier identifier,
+      GoApplicationAccessor accessor) {
+    this.name = name;
     this.logger = logger;
+    this.version = version;
+    this.identifier = identifier;
     this.accessor = accessor;
   }
 
@@ -47,19 +57,19 @@ class ConsoleLogger implements Console {
     }
   }
 
+  /**
+   * Logs a {@link ConsoleLogMessage}.
+   *
+   * @param message
+   */
   private void doLog(ConsoleLogMessage message) {
-    DefaultGoApiRequest request =
-        new DefaultGoApiRequest(Global.SEND_CONSOLE_LOG, Global.API_VERSION, Global.PLUGIN_IDENTIFIER);
+    DefaultGoApiRequest request = new DefaultGoApiRequest(name, version, identifier);
     request.setRequestBody(message.toJSON());
 
     GoApiResponse response = accessor.submit(request);
     if (response.responseCode() != DefaultGoApiResponse.SUCCESS_RESPONSE_CODE) {
       logger.error(String.format("Failed to submit console log: %s", response.responseBody()));
     }
-  }
-
-  public static Console of(Logger logger, GoApplicationAccessor accessor) {
-    return new ConsoleLogger(logger, accessor);
   }
 
   static class ConsoleLogMessage {

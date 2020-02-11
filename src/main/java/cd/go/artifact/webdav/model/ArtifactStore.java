@@ -46,7 +46,7 @@ public class ArtifactStore {
 
   @Expose
   @SerializedName("configuration")
-  private ArtifactStoreConfig storeConfig;
+  private WebDavStoreConfig storeConfig;
 
   /**
    * Constructs an instance of {@link ArtifactStore}.
@@ -56,22 +56,22 @@ public class ArtifactStore {
   /**
    * Constructs an instance of {@link ArtifactStore}.
    */
-  public ArtifactStore(String id, ArtifactStoreConfig storeConfig) {
+  public ArtifactStore(String id, WebDavStoreConfig storeConfig) {
     this.id = id;
     this.storeConfig = storeConfig;
   }
 
   /**
-   * Get the id of the {@link ArtifactStoreConfig}
+   * Get the id of the {@link WebDavStoreConfig}
    */
   public final String getId() {
     return id;
   }
 
   /**
-   * Get the {@link ArtifactStoreConfig}
+   * Get the {@link WebDavStoreConfig}
    */
-  public final ArtifactStoreConfig getStoreConfig() {
+  public final WebDavStoreConfig getStoreConfig() {
     return storeConfig;
   }
 

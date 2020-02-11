@@ -12,7 +12,7 @@
  * the License.
  */
 
-package cd.go.artifact.webdav;
+package cd.go.artifact;
 
 import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;

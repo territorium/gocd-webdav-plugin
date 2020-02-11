@@ -12,7 +12,7 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.annotation;
+package cd.go.artifact.metadata;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -101,14 +101,13 @@ public class Metadata {
    */
   public static List<Metadata> listOf(Class<?> clazz) {
     Field[] fields = clazz.getDeclaredFields();
-    List<Metadata> metadata = new ArrayList<>();
+    List<Metadata> list = new ArrayList<>();
     for (Field field : fields) {
-      MetadataField profileField = field.getAnnotation(MetadataField.class);
-      if (profileField != null) {
-        final Metadata configMetadata = new Metadata(profileField.key(), profileField);
-        metadata.add(configMetadata);
+      MetadataField metadata = field.getAnnotation(MetadataField.class);
+      if (metadata != null) {
+        list.add(new Metadata(metadata.key(), metadata));
       }
     }
-    return metadata;
+    return list;
   }
 }

@@ -19,16 +19,20 @@ import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import cd.go.artifact.webdav.Console;
-import cd.go.artifact.webdav.RequestHandler;
+import cd.go.artifact.Console;
+import cd.go.artifact.RequestHandler;
+import cd.go.artifact.util.Build;
+import cd.go.artifact.util.FileMapper;
 import cd.go.artifact.webdav.WebDAV;
 import cd.go.artifact.webdav.model.ArtifactPlanConfig;
-import cd.go.artifact.webdav.model.ArtifactStoreConfig;
 import cd.go.artifact.webdav.model.PublishRequest;
 import cd.go.artifact.webdav.model.PublishResponse;
-import cd.go.artifact.webdav.utils.PathMapper;
+import cd.go.artifact.webdav.model.WebDavStoreConfig;
 
 /**
  * The {@link PublishArtifactHandler} is a request to the plugin to publish an artifact to the
@@ -68,6 +72,7 @@ public class PublishArtifactHandler implements RequestHandler {
   private final Console        console;
   private final PublishRequest request;
 
+
   /**
    * Constructs an instance of {@link PublishArtifactHandler}.
    *
@@ -98,39 +103,41 @@ public class PublishArtifactHandler implements RequestHandler {
    */
   @Override
   public GoPluginApiResponse execute() {
+    String workingDir = request.getWorkingDir();
     ArtifactPlanConfig planConfig = request.getArtifactPlan().getPlanConfig();
-    ArtifactStoreConfig storeConfig = request.getArtifactStore().getStoreConfig();
+    WebDavStoreConfig storeConfig = request.getArtifactStore().getStoreConfig();
+
+    String source = planConfig.getSource();
+    String target = planConfig.getTarget();
 
     try {
-      String sourceFile = planConfig.getSource();
-      String targetFolder = planConfig.getTarget();
-      String url = storeConfig.getUrl();
-      String workingDir = request.getWorkingDir();
-      String path = url;
-
-      WebDAV webdav = new WebDAV(console, storeConfig.getUsername(), storeConfig.getPassword());
-      if (!targetFolder.isEmpty()) {
-        webdav.createDirectories(url, targetFolder);
-        path += (url.endsWith("/") ? "" : "/") + targetFolder;
+      WebDAV webDav = new WebDAV(storeConfig.getUsername(), storeConfig.getPassword());
+      if (!target.isEmpty()) {
+        webDav.createDirectories(storeConfig.getUrl(), target);
       }
 
-      List<PathMapper> match = PathMapper.list(workingDir, sourceFile);
-      if (!match.isEmpty()) {
-        path = match.get(0).remap(path);
-        File file = match.get(0).toFile();
+      Map<String, String> params = Collections.singletonMap("BUILD", Build.getBuildNumber());
+
+      List<String> destinations = new ArrayList<>();
+      for (FileMapper mapper : FileMapper.list(source, workingDir)) {
+        File file = mapper.getFile();
         if (file.isFile()) {
-          webdav.uploadFile(path, file);
+          String path = mapper.remap(target, params);
+          destinations.add(path);
+          webDav.uploadFile(storeConfig.getUrl(), path, file);
         } else {
           for (File f : file.listFiles()) {
-            webdav.uploadFiles(path, f);
+            String path = mapper.remap(target, params);
+            destinations.add(path);
+            webDav.uploadFiles(storeConfig.getUrl(), path, f);
           }
         }
       }
 
-      PublishResponse response = new PublishResponse();
-      response.addMetadata("Source", sourceFile);
-      console.info("Source file `%s` successfully pushed to WebDAV `%s`.", sourceFile, storeConfig.getUrl());
+      console.info("Source file '%s' pushed to WebDAV '%s'.", source, storeConfig.getUrl());
 
+      PublishResponse response = new PublishResponse();
+      response.addMetadata("Location", destinations.get(0));
       return DefaultGoPluginApiResponse.success(response.toJSON());
     } catch (Exception e) {
       console.error("Failed to publish %s: %s", request.getArtifactPlan(), e);

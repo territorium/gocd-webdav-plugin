@@ -18,16 +18,16 @@ import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import cd.go.artifact.webdav.RequestHandler;
+import cd.go.artifact.RequestHandler;
 import cd.go.artifact.webdav.annotation.ValidationResult;
-import cd.go.artifact.webdav.model.ArtifactStoreConfig;
+import cd.go.artifact.webdav.model.WebDavStoreConfig;
 
 public class StoreConfigValidationHandler implements RequestHandler {
 
-  private final ArtifactStoreConfig storeConfig;
+  private final WebDavStoreConfig storeConfig;
 
   public StoreConfigValidationHandler(GoPluginApiRequest request) {
-    storeConfig = ArtifactStoreConfig.fromJSON(request.requestBody());
+    storeConfig = WebDavStoreConfig.fromJSON(request.requestBody());
   }
 
   @Override

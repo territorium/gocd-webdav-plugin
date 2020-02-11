@@ -12,7 +12,11 @@
  * the License.
  */
 
-package cd.go.artifact.webdav;
+package cd.go.artifact;
+
+import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
+import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
+import com.thoughtworks.go.plugin.api.logging.Logger;
 
 public interface Console {
 
@@ -21,4 +25,10 @@ public interface Console {
   public void error(String message, Object... arguments);
 
   public void logStackTrace(Exception exception, String message, Object... arguments);
+
+  public static ConsoleLogger of(String name, Logger logger, String version, GoPluginIdentifier identifier,
+      GoApplicationAccessor accessor) {
+    return new ConsoleLogger(name, logger, version, identifier, accessor);
+  }
+
 }

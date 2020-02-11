@@ -12,7 +12,7 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.annotation;
+package cd.go.artifact.metadata;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

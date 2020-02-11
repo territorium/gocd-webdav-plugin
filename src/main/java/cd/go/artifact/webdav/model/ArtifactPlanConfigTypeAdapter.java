@@ -15,7 +15,7 @@ public class ArtifactPlanConfigTypeAdapter
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
     if (isBuildFileConfig(jsonObject)) {
-      return new WebDAVPlanConfig(jsonObject.get("Source").getAsString(), parseDestination(jsonObject));
+      return new WebDavPlanConfig(jsonObject.get("Source").getAsString(), parseDestination(jsonObject));
     } else {
       throw new JsonParseException("Ambiguous or unknown json. `Source` property must be specified.");
     }
@@ -31,8 +31,8 @@ public class ArtifactPlanConfigTypeAdapter
 
   @Override
   public JsonElement serialize(ArtifactPlanConfig src, Type typeOfSrc, JsonSerializationContext context) {
-    if (src instanceof WebDAVPlanConfig) {
-      return context.serialize(src, WebDAVPlanConfig.class);
+    if (src instanceof WebDavPlanConfig) {
+      return context.serialize(src, WebDavPlanConfig.class);
     }
     throw new JsonIOException("Unknown type of ArtifactPlanConfig");
   }

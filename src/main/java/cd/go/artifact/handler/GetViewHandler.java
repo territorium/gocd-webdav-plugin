@@ -12,14 +12,14 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.handler;
+package cd.go.artifact.handler;
 
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import cd.go.artifact.webdav.RequestHandler;
-import cd.go.artifact.webdav.utils.Util;
+import cd.go.artifact.RequestHandler;
+import cd.go.artifact.util.Resources;
 
 /**
  * The {@link GetViewHandler} is a message that the plugin should implement, to allow users to
@@ -52,7 +52,7 @@ public class GetViewHandler implements RequestHandler {
   @Override
   public final GoPluginApiResponse execute() {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("template", Util.readResource(template));
+    jsonObject.addProperty("template", Resources.asString(template));
     return DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));
   }
 }

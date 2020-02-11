@@ -19,15 +19,15 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.List;
 
-import cd.go.artifact.webdav.RequestHandler;
-import cd.go.artifact.webdav.annotation.Metadata;
-import cd.go.artifact.webdav.model.ArtifactStoreConfig;
+import cd.go.artifact.RequestHandler;
+import cd.go.artifact.metadata.Metadata;
+import cd.go.artifact.webdav.model.WebDavStoreConfig;
 import cd.go.artifact.webdav.utils.Util;
 
 public class StoreConfigMetadataHandler implements RequestHandler {
 
   public GoPluginApiResponse execute() {
-    final List<Metadata> storeConfigMetadata = Metadata.listOf(ArtifactStoreConfig.class);
+    final List<Metadata> storeConfigMetadata = Metadata.listOf(WebDavStoreConfig.class);
     return DefaultGoPluginApiResponse.success(Util.GSON.toJson(storeConfigMetadata));
   }
 }

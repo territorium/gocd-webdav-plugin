@@ -19,15 +19,15 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.List;
 
-import cd.go.artifact.webdav.RequestHandler;
-import cd.go.artifact.webdav.annotation.Metadata;
-import cd.go.artifact.webdav.model.WebDAVPlanConfig;
+import cd.go.artifact.RequestHandler;
+import cd.go.artifact.metadata.Metadata;
+import cd.go.artifact.webdav.model.WebDavPlanConfig;
 import cd.go.artifact.webdav.utils.Util;
 
 public class PublishArtifactMetadataHandler implements RequestHandler {
 
   public GoPluginApiResponse execute() {
-    final List<Metadata> metadata = Metadata.listOf(WebDAVPlanConfig.class);
+    final List<Metadata> metadata = Metadata.listOf(WebDavPlanConfig.class);
     return DefaultGoPluginApiResponse.success(Util.GSON.toJson(metadata));
   }
 }

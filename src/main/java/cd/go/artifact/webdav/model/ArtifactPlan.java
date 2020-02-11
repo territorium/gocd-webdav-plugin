@@ -78,7 +78,7 @@ public class ArtifactPlan {
   public ArtifactPlan(String id, String storeId, String sourceFile, Optional<String> destination) {
     this.id = id;
     this.storeId = storeId;
-    this.planConfig = new WebDAVPlanConfig(sourceFile, destination);
+    this.planConfig = new WebDavPlanConfig(sourceFile, destination);
   }
 
   /**
@@ -96,7 +96,7 @@ public class ArtifactPlan {
   }
 
   /**
-   * Get the related {@link ArtifactStoreConfig}.
+   * Get the related {@link WebDavStoreConfig}.
    */
   public final ArtifactPlanConfig getPlanConfig() {
     return planConfig;

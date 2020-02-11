@@ -26,11 +26,9 @@ import java.io.InputStream;
 
 public class WebDAV {
 
-  private final Console console;
   private final Sardine sardine;
 
-  public WebDAV(Console console, String username, String password) {
-    this.console = console;
+  public WebDAV(String username, String password) {
     this.sardine = SardineFactory.begin(username, password);;
   }
 
@@ -38,31 +36,24 @@ public class WebDAV {
     return sardine;
   }
 
-  protected final Console getConsole() {
-    return console;
-  }
-
-  public final InputStream getStream(String url) throws IOException {
+  public final InputStream getInputStream(String url) throws IOException {
     return getSardine().get(url);
   }
 
-  public final void uploadFile(String url, File file) throws IOException {
-    getConsole().info("Upload file %s", url);
-
+  public final void uploadFile(String url, String path, File file) throws IOException {
     try (InputStream stream = new FileInputStream(file)) {
-      byte[] data = IOUtils.toByteArray(stream);
-      getSardine().put(url, data);
+      getSardine().put(String.format("%s/%s", url, path), IOUtils.toByteArray(stream));
     }
   }
 
-  public void uploadFiles(String url, File file) throws IOException {
+  public void uploadFiles(String url, String path, File file) throws IOException {
     String resource = String.format("%s/%s", url, file.getName());
     if (file.isDirectory()) {
       createDirectory(resource);
       for (File f : file.listFiles())
-        uploadFiles(resource, f);
+        uploadFiles(resource, path, f);
     } else {
-      uploadFile(resource, file);
+      uploadFile(resource, path, file);
     }
   }
 
@@ -84,13 +75,10 @@ public class WebDAV {
   private boolean createDirectory(String resource) {
     try {
       if (!getSardine().exists(resource)) {
-        getConsole().info("Create directory %s", resource);
         getSardine().createDirectory(resource);
         return true;
       }
-    } catch (IOException e) {
-      getConsole().logStackTrace(e, "Couldn't create directory %s", resource);
-    }
+    } catch (IOException e) {}
     return false;
   }
 }

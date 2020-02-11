@@ -25,15 +25,18 @@ import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
+import java.util.Collections;
 import java.util.Properties;
 
+import cd.go.artifact.ArtifactRequest;
+import cd.go.artifact.Console;
+import cd.go.artifact.handler.GetPluginCapabilitiesHandler;
+import cd.go.artifact.handler.GetPluginIconHandler;
+import cd.go.artifact.handler.GetViewHandler;
 import cd.go.artifact.webdav.handler.FetchArtifactHandler;
-import cd.go.artifact.webdav.handler.PublishArtifactHandler;
 import cd.go.artifact.webdav.handler.FetchArtifactMetadataHandler;
 import cd.go.artifact.webdav.handler.FetchArtifactValidationHandler;
-import cd.go.artifact.webdav.handler.GetPluginCapabilitiesHandler;
-import cd.go.artifact.webdav.handler.GetPluginIconHandler;
-import cd.go.artifact.webdav.handler.GetViewHandler;
+import cd.go.artifact.webdav.handler.PublishArtifactHandler;
 import cd.go.artifact.webdav.handler.PublishArtifactMetadataHandler;
 import cd.go.artifact.webdav.handler.PublishArtifactValidationHandler;
 import cd.go.artifact.webdav.handler.StoreConfigMetadataHandler;
@@ -43,7 +46,14 @@ import cd.go.artifact.webdav.utils.Util;
 @Extension
 public class WebDAVPlugin implements GoPlugin {
 
-  private static final Logger LOG = Logger.getLoggerFor(WebDAVPlugin.class);
+  private static final String             EXTENSION         = "artifact";
+  private static final String             VERSION           = "1.0";
+  private static final GoPluginIdentifier PLUGIN_IDENTIFIER =
+      new GoPluginIdentifier(EXTENSION, Collections.singletonList(VERSION));
+
+
+  private static final Logger LOGGER      = Logger.getLoggerFor(WebDAVPlugin.class);
+  private static final String LOGGER_NAME = "go.processor.artifact.console-log";
 
 
   private Console console;
@@ -51,13 +61,19 @@ public class WebDAVPlugin implements GoPlugin {
   @Load
   public void onLoad(PluginContext ctx) {
     final Properties properties = Util.getPluginProperties();
-    LOG.info(
+    LOGGER.info(
         String.format("Loading plugin %s[%s].", properties.getProperty("name"), properties.getProperty("pluginId")));
   }
 
   @Override
+  public GoPluginIdentifier pluginIdentifier() {
+    return WebDAVPlugin.PLUGIN_IDENTIFIER;
+  }
+
+  @Override
   public void initializeGoApplicationAccessor(GoApplicationAccessor accessor) {
-    console = ConsoleLogger.of(LOG, accessor);
+    console = Console.of(WebDAVPlugin.LOGGER_NAME, WebDAVPlugin.LOGGER, WebDAVPlugin.VERSION,
+        WebDAVPlugin.PLUGIN_IDENTIFIER, accessor);
   }
 
   @Override
@@ -99,13 +115,8 @@ public class WebDAVPlugin implements GoPlugin {
           throw new UnhandledRequestTypeException(request.requestName());
       }
     } catch (Exception e) {
-      LOG.error("Error while executing request " + request.requestName(), e);
+      LOGGER.error("Error while executing request " + request.requestName(), e);
       throw new RuntimeException(e);
     }
-  }
-
-  @Override
-  public GoPluginIdentifier pluginIdentifier() {
-    return Global.PLUGIN_IDENTIFIER;
   }
 }

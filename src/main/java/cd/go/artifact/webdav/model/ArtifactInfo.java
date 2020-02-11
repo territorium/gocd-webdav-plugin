@@ -30,7 +30,7 @@ public class ArtifactInfo {
 
   @Expose
   @SerializedName("configuration")
-  private ArtifactStoreConfig storeConfig;
+  private WebDavStoreConfig storeConfig;
 
   @Expose
   @SerializedName("artifact_plans")
@@ -38,7 +38,7 @@ public class ArtifactInfo {
 
   public ArtifactInfo() {}
 
-  public ArtifactInfo(String id, ArtifactStoreConfig artifactStoreConfig, ArtifactPlan... artifactPlans) {
+  public ArtifactInfo(String id, WebDavStoreConfig artifactStoreConfig, ArtifactPlan... artifactPlans) {
     this.id = id;
     this.storeConfig = artifactStoreConfig;
     this.artifactPlans = Arrays.asList(artifactPlans);
@@ -52,7 +52,7 @@ public class ArtifactInfo {
     return id;
   }
 
-  public ArtifactStoreConfig getArtifactStoreConfig() {
+  public WebDavStoreConfig getArtifactStoreConfig() {
     return storeConfig;
   }
 

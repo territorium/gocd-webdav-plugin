@@ -7,10 +7,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 import java.util.Optional;
 
-import cd.go.artifact.webdav.annotation.MetadataField;
+import cd.go.artifact.metadata.MetadataField;
 
 /**
- * The {@link WebDAVPlanConfig} get plan config for WebDAV.
+ * The {@link WebDavPlanConfig} get plan config for WebDAV.
  * 
  * <pre>
  * {
@@ -23,7 +23,7 @@ import cd.go.artifact.webdav.annotation.MetadataField;
  * }
  * </pre>
  */
-public class WebDAVPlanConfig extends ArtifactPlanConfig {
+public class WebDavPlanConfig extends ArtifactPlanConfig {
 
   @Expose
   @SerializedName("Source")
@@ -35,7 +35,7 @@ public class WebDAVPlanConfig extends ArtifactPlanConfig {
   @MetadataField(key = "Destination")
   private String target;
 
-  public WebDAVPlanConfig(String source, Optional<String> destination) {
+  public WebDavPlanConfig(String source, Optional<String> destination) {
     this.source = source;
     this.target = destination.orElse("");
   }
@@ -56,7 +56,7 @@ public class WebDAVPlanConfig extends ArtifactPlanConfig {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    WebDAVPlanConfig that = (WebDAVPlanConfig) o;
+    WebDavPlanConfig that = (WebDavPlanConfig) o;
     return Objects.equals(source, that.source) && Objects.equals(target, that.target);
   }
 

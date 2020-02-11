@@ -12,12 +12,12 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.handler;
+package cd.go.artifact.handler;
 
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import cd.go.artifact.webdav.utils.Util;
+import cd.go.artifact.RequestHandler;
 
 /**
  * The {@link GetPluginCapabilitiesHandler} is a request to the plugin to provide plugin
@@ -27,27 +27,27 @@ import cd.go.artifact.webdav.utils.Util;
  * 
  * Server sends request an Empty request body.
  */
-public class GetPluginCapabilitiesHandler {
+public class GetPluginCapabilitiesHandler implements RequestHandler {
 
   /**
    * The plugin is expected to return status 200 if it can understand the request, with an empty
    * response body
    */
+  @Override
   public GoPluginApiResponse execute() {
-    Capabilities capabilities = new Capabilities();
-    return DefaultGoPluginApiResponse.success(capabilities.toJSON());
+    return DefaultGoPluginApiResponse.success(Capabilities.asJSON());
   }
 
   public static class Capabilities {
 
     public Capabilities() {}
 
-    public static Capabilities fromJSON(String json) {
-      return Util.GSON.fromJson(json, Capabilities.class);
+    public String toJSON() {
+      return GSON.toJson(this);
     }
 
-    public String toJSON() {
-      return Util.GSON.toJson(this);
+    public static String asJSON() {
+      return GSON.toJson(new Capabilities());
     }
   }
 }

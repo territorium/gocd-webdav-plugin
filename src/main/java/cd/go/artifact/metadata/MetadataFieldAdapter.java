@@ -1,5 +1,5 @@
 
-package cd.go.artifact.webdav.annotation;
+package cd.go.artifact.metadata;
 
 import com.google.gson.*;
 

@@ -19,7 +19,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.ArrayList;
 
-import cd.go.artifact.webdav.RequestHandler;
+import cd.go.artifact.RequestHandler;
 import cd.go.artifact.webdav.utils.Util;
 
 public class FetchArtifactMetadataHandler implements RequestHandler {

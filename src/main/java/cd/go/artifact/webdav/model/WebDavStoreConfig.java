@@ -14,20 +14,17 @@
 
 package cd.go.artifact.webdav.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import cd.go.artifact.webdav.annotation.MetadataField;
-import cd.go.artifact.webdav.annotation.MetadataFieldAdapter;
+import cd.go.artifact.metadata.MetadataField;
 import cd.go.artifact.webdav.annotation.Validatable;
 import cd.go.artifact.webdav.utils.Util;
 
 /**
- * The {@link ArtifactStoreConfig} class defines the specific configuration of the store.
+ * The {@link WebDavStoreConfig} class defines the specific configuration of the store.
  */
-public class ArtifactStoreConfig implements Validatable {
+public class WebDavStoreConfig implements Validatable {
 
   @Expose
   @SerializedName("URL")
@@ -46,18 +43,18 @@ public class ArtifactStoreConfig implements Validatable {
 
 
   /**
-   * Constructs an instance of {@link ArtifactStoreConfig}.
+   * Constructs an instance of {@link WebDavStoreConfig}.
    */
-  public ArtifactStoreConfig() {}
+  public WebDavStoreConfig() {}
 
   /**
-   * Constructs an instance of {@link ArtifactStoreConfig}.
+   * Constructs an instance of {@link WebDavStoreConfig}.
    *
    * @param url
    * @param username
    * @param password
    */
-  public ArtifactStoreConfig(String url, String username, String password) {
+  public WebDavStoreConfig(String url, String username, String password) {
     this.url = url;
     this.username = username;
     this.password = password;
@@ -67,7 +64,7 @@ public class ArtifactStoreConfig implements Validatable {
    * Get the WebDAV resource.
    */
   public final String getUrl() {
-    return url;
+    return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
   }
 
   /**
@@ -102,10 +99,10 @@ public class ArtifactStoreConfig implements Validatable {
   public final boolean equals(Object o) {
     if (this == o)
       return true;
-    if (!(o instanceof ArtifactStoreConfig))
+    if (!(o instanceof WebDavStoreConfig))
       return false;
 
-    ArtifactStoreConfig that = (ArtifactStoreConfig) o;
+    WebDavStoreConfig that = (WebDavStoreConfig) o;
 
     if (url != null ? !url.equals(that.url) : that.url != null)
       return false;
@@ -115,7 +112,7 @@ public class ArtifactStoreConfig implements Validatable {
   }
 
 
-  public static ArtifactStoreConfig fromJSON(String json) {
-    return Util.GSON.fromJson(json, ArtifactStoreConfig.class);
+  public static WebDavStoreConfig fromJSON(String json) {
+    return Util.GSON.fromJson(json, WebDavStoreConfig.class);
   }
 }

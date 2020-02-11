@@ -12,7 +12,7 @@
  * the License.
  */
 
-package cd.go.artifact.webdav;
+package cd.go.artifact;
 
 /**
  * Enumerable that represents one of the messages that the server sends to the plugin

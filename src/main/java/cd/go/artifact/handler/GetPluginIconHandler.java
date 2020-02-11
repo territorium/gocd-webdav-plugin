@@ -12,7 +12,7 @@
  * the License.
  */
 
-package cd.go.artifact.webdav.handler;
+package cd.go.artifact.handler;
 
 
 import com.google.gson.JsonObject;
@@ -21,8 +21,8 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.Base64;
 
-import cd.go.artifact.webdav.RequestHandler;
-import cd.go.artifact.webdav.utils.Util;
+import cd.go.artifact.RequestHandler;
+import cd.go.artifact.util.Resources;
 
 /**
  * The {@link GetPluginIconHandler} is expected to return the icon for the plugin, so as to make it
@@ -57,7 +57,7 @@ public class GetPluginIconHandler implements RequestHandler {
   public GoPluginApiResponse execute() {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("content_type", contentType);
-    jsonObject.addProperty("data", Base64.getEncoder().encodeToString(Util.readResourceBytes(icon)));
+    jsonObject.addProperty("data", Base64.getEncoder().encodeToString(Resources.asBytes(icon)));
     return DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));
   }
 }

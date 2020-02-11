@@ -17,7 +17,7 @@ package cd.go.artifact.webdav.handler;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import cd.go.artifact.webdav.RequestHandler;
+import cd.go.artifact.RequestHandler;
 import cd.go.artifact.webdav.annotation.ValidationResult;
 
 public class FetchArtifactValidationHandler implements RequestHandler {

@@ -17,15 +17,13 @@ package cd.go.artifact.webdav.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-import cd.go.artifact.webdav.annotation.MetadataField;
-import cd.go.artifact.webdav.annotation.MetadataFieldAdapter;
+import cd.go.artifact.metadata.MetadataField;
+import cd.go.artifact.metadata.MetadataFieldAdapter;
+import cd.go.artifact.util.Resources;
 import cd.go.artifact.webdav.model.ArtifactPlanConfig;
 import cd.go.artifact.webdav.model.ArtifactPlanConfigTypeAdapter;
 
@@ -35,34 +33,13 @@ public class Util {
       .registerTypeAdapter(ArtifactPlanConfig.class, new ArtifactPlanConfigTypeAdapter())
       .registerTypeAdapter(MetadataField.class, new MetadataFieldAdapter()).create();
 
-  public static String readResource(String resourceFile) {
-    return new String(readResourceBytes(resourceFile), StandardCharsets.UTF_8);
-  }
-
-  public static byte[] readResourceBytes(String resourceFile) {
-    try (InputStream is = Util.class.getResourceAsStream(resourceFile)) {
-      return readFully(is);
-    } catch (IOException e) {
-      throw new RuntimeException("Could not find resource " + resourceFile, e);
-    }
-  }
-
-  private static byte[] readFully(InputStream input) throws IOException {
-    byte[] buffer = new byte[8192];
-    int bytesRead;
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
-    while ((bytesRead = input.read(buffer)) != -1) {
-      output.write(buffer, 0, bytesRead);
-    }
-    return output.toByteArray();
-  }
 
   public static String pluginId() {
     return getPluginProperties().getProperty("pluginId");
   }
 
   public static Properties getPluginProperties() {
-    String propertiesAsAString = readResource("/plugin.properties");
+    String propertiesAsAString = Resources.asString("/plugin.properties");
     try {
       Properties properties = new Properties();
       properties.load(new StringReader(propertiesAsAString));
