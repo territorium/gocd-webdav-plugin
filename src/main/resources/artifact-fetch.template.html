@@ -1,1 +1,5 @@
-<div></div>
+<div class="form_item_block">
+    <label ng-class="{'is-invalid-label': GOINPUTNAME[TARGET].$error.server}">Destination:<span class='asterix'>*</span></label>
+    <input ng-class="{'is-invalid-input': GOINPUTNAME[TARGET].$error.server}" type="text" ng-model="target" ng-required="true"/>
+    <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[TARGET].$error.server}" ng-show="GOINPUTNAME[TARGET].$error.server">{{GOINPUTNAME[TARGET].$error.server}}</span>
+</div>

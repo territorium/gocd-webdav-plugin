@@ -14,51 +14,21 @@
 
 package cd.go.artifact.webdav.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 
-import cd.go.artifact.webdav.annotation.Validatable;
-import cd.go.artifact.webdav.metadata.MetadataField;
-import cd.go.artifact.webdav.utils.Util;
+import cd.go.artifact.util.JsonBuilder;
 
 /**
- * The {@link WebDavStoreConfig} class defines the specific configuration of the store.
+ * The {@link StoreConfig} class defines the specific configuration of the store.
  */
-public class WebDavStoreConfig implements Validatable {
+public class StoreConfig extends JsonBuilder /* implements Validatable */ {
 
-  @Expose
-  @SerializedName("URL")
-  @MetadataField(key = "URL", required = true)
   private String url;
-
-  @Expose
-  @SerializedName("Username")
-  @MetadataField(key = "Username")
   private String username;
-
-  @Expose
-  @SerializedName("Password")
-  @MetadataField(key = "Password", secure = true)
   private String password;
-
-
-  /**
-   * Constructs an instance of {@link WebDavStoreConfig}.
-   */
-  public WebDavStoreConfig() {}
-
-  /**
-   * Constructs an instance of {@link WebDavStoreConfig}.
-   *
-   * @param url
-   * @param username
-   * @param password
-   */
-  public WebDavStoreConfig(String url, String username, String password) {
-    this.url = url;
-    this.username = username;
-    this.password = password;
-  }
 
   /**
    * Get the WebDAV resource.
@@ -82,6 +52,31 @@ public class WebDavStoreConfig implements Validatable {
   }
 
   /**
+   * Builds the instance as {@link JsonObject}.
+   */
+  @Override
+  public final JsonObject build() {
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    builder.add("URL", url);
+    builder.add("Username", username);
+    builder.add("Password", password);
+    return builder.build();
+  }
+
+  /**
+   * Parses the values from a {@link JsonObject}.
+   * 
+   * @param json
+   */
+  @Override
+  public final void parse(JsonValue json) {
+    JsonObject object = json.asJsonObject();
+    this.url = object.getString("URL");
+    this.username = object.getString("Username");
+    this.password = object.getString("Password");
+  }
+
+  /**
    * Returns a hash code value for the object.
    */
   @Override
@@ -99,20 +94,15 @@ public class WebDavStoreConfig implements Validatable {
   public final boolean equals(Object o) {
     if (this == o)
       return true;
-    if (!(o instanceof WebDavStoreConfig))
+    if (!(o instanceof StoreConfig))
       return false;
 
-    WebDavStoreConfig that = (WebDavStoreConfig) o;
+    StoreConfig that = (StoreConfig) o;
 
     if (url != null ? !url.equals(that.url) : that.url != null)
       return false;
     if (username != null ? !username.equals(that.username) : that.username != null)
       return false;
     return password != null ? password.equals(that.password) : that.password == null;
-  }
-
-
-  public static WebDavStoreConfig fromJSON(String json) {
-    return Util.GSON.fromJson(json, WebDavStoreConfig.class);
   }
 }

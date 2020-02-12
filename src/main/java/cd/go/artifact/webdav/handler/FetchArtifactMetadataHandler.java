@@ -17,15 +17,27 @@ package cd.go.artifact.webdav.handler;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import java.util.ArrayList;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 import cd.go.artifact.RequestHandler;
-import cd.go.artifact.webdav.utils.Util;
 
 public class FetchArtifactMetadataHandler implements RequestHandler {
 
   public GoPluginApiResponse execute() {
-    return DefaultGoPluginApiResponse.success(Util.GSON.toJson(new ArrayList<>()));
+    JsonObjectBuilder meta = Json.createObjectBuilder();
+    meta.add("required", true);
+    meta.add("secure", false);
+
+    JsonObjectBuilder object = Json.createObjectBuilder();
+    object.add("key", "target");
+    object.add("metadata", meta);
+
+    JsonArrayBuilder array = Json.createArrayBuilder();
+    array.add(object);
+
+    return DefaultGoPluginApiResponse.success(array.build().toString());
   }
 }
 

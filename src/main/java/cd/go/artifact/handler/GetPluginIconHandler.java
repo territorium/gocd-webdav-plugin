@@ -15,11 +15,13 @@
 package cd.go.artifact.handler;
 
 
-import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.Base64;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 import cd.go.artifact.RequestHandler;
 import cd.go.artifact.util.Resources;
@@ -55,9 +57,9 @@ public class GetPluginIconHandler implements RequestHandler {
    */
   @Override
   public GoPluginApiResponse execute() {
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("content_type", contentType);
-    jsonObject.addProperty("data", Base64.getEncoder().encodeToString(Resources.asBytes(icon)));
-    return DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    builder.add("content_type", contentType);
+    builder.add("data", Base64.getEncoder().encodeToString(Resources.asBytes(icon)));
+    return DefaultGoPluginApiResponse.success(builder.build().toString());
   }
 }

@@ -14,9 +14,11 @@
 
 package cd.go.artifact.handler;
 
-import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 import cd.go.artifact.RequestHandler;
 import cd.go.artifact.util.Resources;
@@ -51,8 +53,8 @@ public class GetViewHandler implements RequestHandler {
    */
   @Override
   public final GoPluginApiResponse execute() {
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("template", Resources.asString(template));
-    return DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    builder.add("template", Resources.asString(template));
+    return DefaultGoPluginApiResponse.success(builder.build().toString());
   }
 }

@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 import java.util.Optional;
 
-import cd.go.artifact.metadata.MetadataField;
+import cd.go.artifact.webdav.metadata.MetadataField;
 
 /**
  * The {@link WebDavPlanConfig} get plan config for WebDAV.

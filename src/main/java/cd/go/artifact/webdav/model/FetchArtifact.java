@@ -32,4 +32,5 @@ public class FetchArtifact {
   public String getArtifactId() {
     return artifactId;
   }
+  
 }

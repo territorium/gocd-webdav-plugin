@@ -20,7 +20,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import java.util.List;
 
 import cd.go.artifact.RequestHandler;
-import cd.go.artifact.metadata.Metadata;
+import cd.go.artifact.webdav.metadata.Metadata;
 import cd.go.artifact.webdav.model.WebDavPlanConfig;
 import cd.go.artifact.webdav.utils.Util;
 

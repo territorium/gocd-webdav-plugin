@@ -29,9 +29,10 @@ import java.util.Map;
 
 import cd.go.artifact.Console;
 import cd.go.artifact.RequestHandler;
+import cd.go.artifact.model.FetchRequest;
+import cd.go.artifact.model.FetchResponse;
 import cd.go.artifact.webdav.WebDAV;
-import cd.go.artifact.webdav.model.FetchRequest;
-import cd.go.artifact.webdav.model.WebDavStoreConfig;
+import cd.go.artifact.webdav.model.StoreConfig;
 
 public class FetchArtifactHandler implements RequestHandler {
 
@@ -41,28 +42,35 @@ public class FetchArtifactHandler implements RequestHandler {
 
   public FetchArtifactHandler(Console console, GoPluginApiRequest request) {
     this.console = console;
-    // GsonBuilder builder = new GsonBuilder();
-    this.request = FetchRequest.fromJSON(request.requestBody());
+    this.request = FetchRequest.of(request.requestBody());
   }
 
   @Override
   public GoPluginApiResponse execute() {
-    String workingDir = request.getAgentWorkingDir();
-    WebDavStoreConfig storeConfig = request.getArtifactStoreConfig();
-    String url = storeConfig.getUrl();
+    File workingDir = new File(request.getAgentWorkingDir());
+    StoreConfig storeConfig = request.getStoreConfig();
 
     try {
       Map<String, String> metadata = request.getMetadata();
       String relativePath = FetchArtifactHandler.validateLocation(metadata);
-      String resource = String.format("%s/%s", url, relativePath);
+      String resource = String.format("%s/%s", storeConfig.getUrl(), relativePath);
 
-      console.info("Retrieving file '%s' from WebDAV '%s'.", relativePath, url);
 
+      if (request.getFetchConfig().getTarget() != null) {
+        workingDir = new File(workingDir, request.getFetchConfig().getTarget());
+      }
+
+      console.info("Retrieving file '%s' from WebDAV '%s'.", relativePath, storeConfig.getUrl());
+
+      FetchResponse response = new FetchResponse();
       WebDAV webDAV = new WebDAV(storeConfig.getUsername(), storeConfig.getPassword());
       try (InputStream reader = webDAV.getInputStream(resource)) {
         Path path = Paths.get(relativePath);
         File file = new File(workingDir, path.getName(path.getNameCount() - 1).toString());
         file.getParentFile().mkdirs();
+
+        console.info("Storing file to '%s'", file.getAbsolutePath());
+
         try (OutputStream writer = new BufferedOutputStream(new FileOutputStream(file))) {
           int read_length = -1;
           while ((read_length = reader.read()) != -1) {
@@ -70,10 +78,11 @@ public class FetchArtifactHandler implements RequestHandler {
           }
           writer.flush();
         }
+        response.setValue("FILE", file.getAbsolutePath());
       }
-      console.info("Source '%s' successfully pulled from WebDAV '%s'.", relativePath, url);
+      console.info("Source '%s' successfully pulled from WebDAV '%s'.", relativePath, storeConfig.getUrl());
 
-      return DefaultGoPluginApiResponse.success("");
+      return DefaultGoPluginApiResponse.success(response.toString());
     } catch (Exception e) {
       String message = String.format("Failed pull source file: %s", e);
       console.error(message);

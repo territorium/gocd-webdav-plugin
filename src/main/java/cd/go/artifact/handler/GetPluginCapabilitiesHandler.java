@@ -35,19 +35,6 @@ public class GetPluginCapabilitiesHandler implements RequestHandler {
    */
   @Override
   public GoPluginApiResponse execute() {
-    return DefaultGoPluginApiResponse.success(Capabilities.asJSON());
-  }
-
-  public static class Capabilities {
-
-    public Capabilities() {}
-
-    public String toJSON() {
-      return GSON.toJson(this);
-    }
-
-    public static String asJSON() {
-      return GSON.toJson(new Capabilities());
-    }
+    return DefaultGoPluginApiResponse.success("{}");
   }
 }

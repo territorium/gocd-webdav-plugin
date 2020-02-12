@@ -12,7 +12,7 @@
  * the License.
  */
 
-package cd.go.artifact.metadata;
+package cd.go.artifact.webdav.metadata;
 
 public enum MetadataType {
 

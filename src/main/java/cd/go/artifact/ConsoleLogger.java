@@ -14,13 +14,15 @@
 
 package cd.go.artifact;
 
-import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.DefaultGoApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 
 class ConsoleLogger implements Console {
@@ -64,7 +66,7 @@ class ConsoleLogger implements Console {
    */
   private void doLog(ConsoleLogMessage message) {
     DefaultGoApiRequest request = new DefaultGoApiRequest(name, version, identifier);
-    request.setRequestBody(message.toJSON());
+    request.setRequestBody(message.toString());
 
     GoApiResponse response = accessor.submit(request);
     if (response.responseCode() != DefaultGoApiResponse.SUCCESS_RESPONSE_CODE) {
@@ -72,7 +74,7 @@ class ConsoleLogger implements Console {
     }
   }
 
-  static class ConsoleLogMessage {
+  private class ConsoleLogMessage {
 
     public LogLevel logLevel;
     public String   message;
@@ -82,8 +84,11 @@ class ConsoleLogger implements Console {
       this.message = (arguments.length == 0) ? message : String.format(message, arguments);
     }
 
-    public String toJSON() {
-      return new Gson().toJson(this);
+    public final String toString() {
+      JsonObjectBuilder builder = Json.createObjectBuilder();
+      builder.add("logLevel", logLevel.name());
+      builder.add("message", message);
+      return builder.build().toString();
     }
   }
 

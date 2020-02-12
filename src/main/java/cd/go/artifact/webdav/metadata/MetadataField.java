@@ -12,11 +12,22 @@
  * the License.
  */
 
-package cd.go.artifact;
+package cd.go.artifact.webdav.metadata;
 
-import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface RequestHandler {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MetadataField {
 
-  GoPluginApiResponse execute() throws Exception;
+  String key();
+
+  boolean required() default false;
+
+  boolean secure() default false;
+
+  MetadataType type() default MetadataType.STRING;
 }

@@ -12,22 +12,22 @@
  * the License.
  */
 
-package cd.go.artifact.metadata;
+package cd.go.artifact;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+/**
+ * Enumerable that represents one of the messages that the server sends to the plugin
+ */
+public interface ArtifactMessage {
 
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface MetadataField {
+  String METADATA                     = "metadata";
 
-  String key();
+  String ARTIFACT_METADATA            = "artifact_metadata";
+  String STORE_CONFIGURATION          = "store_configuration";
+  String AGENT_WORKING_DIRECTORY      = "agent_working_directory";
+  String FETCH_ARTIFACT_CONFIGURATION = "fetch_artifact_configuration";
 
-  boolean required() default false;
 
-  boolean secure() default false;
-
-  MetadataType type() default MetadataType.STRING;
+  String ENV_NAME   = "name";
+  String ENV_VALUE  = "value";
+  String ENV_SECURE = "secure";
 }

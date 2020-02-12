@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
-import cd.go.artifact.metadata.MetadataField;
-import cd.go.artifact.metadata.MetadataFieldAdapter;
 import cd.go.artifact.util.Resources;
+import cd.go.artifact.webdav.metadata.MetadataField;
+import cd.go.artifact.webdav.metadata.MetadataFieldAdapter;
 import cd.go.artifact.webdav.model.ArtifactPlanConfig;
 import cd.go.artifact.webdav.model.ArtifactPlanConfigTypeAdapter;
 

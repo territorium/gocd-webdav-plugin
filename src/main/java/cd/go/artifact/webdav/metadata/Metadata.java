@@ -12,7 +12,7 @@
  * the License.
  */
 
-package cd.go.artifact.metadata;
+package cd.go.artifact.webdav.metadata;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
