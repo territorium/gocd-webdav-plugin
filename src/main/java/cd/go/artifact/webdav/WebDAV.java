@@ -1,14 +1,16 @@
 /*
  * Copyright 2018 ThoughtWorks, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
  */
 
@@ -23,6 +25,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import cd.go.artifact.Console;
 
 public class WebDAV {
 
@@ -40,20 +44,22 @@ public class WebDAV {
     return getSardine().get(url);
   }
 
-  public final void uploadFile(String url, String path, File file) throws IOException {
+  public final void uploadFile(String url, String path, File file, Console console) throws IOException {
     try (InputStream stream = new FileInputStream(file)) {
+      console.info(String.format(">>> %s/%s", url, path));
       getSardine().put(String.format("%s/%s", url, path), IOUtils.toByteArray(stream));
     }
   }
 
-  public void uploadFiles(String url, String path, File file) throws IOException {
-    String resource = String.format("%s/%s", url, file.getName());
+  public final void uploadFiles(String url, String path, File file, Console console) throws IOException {
     if (file.isDirectory()) {
+      String resource = String.format("%s/%s", path, file.getName());
       createDirectory(resource);
-      for (File f : file.listFiles())
-        uploadFiles(resource, path, f);
+      for (File f : file.listFiles()) {
+        uploadFiles(url, resource, f, console);
+      }
     } else {
-      uploadFile(resource, path, file);
+      uploadFile(url, path, file, console);
     }
   }
 

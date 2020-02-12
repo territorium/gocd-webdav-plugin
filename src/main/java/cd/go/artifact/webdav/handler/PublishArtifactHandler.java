@@ -1,14 +1,16 @@
 /*
  * Copyright 2018 ThoughtWorks, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
  */
 
@@ -35,8 +37,8 @@ import cd.go.artifact.webdav.model.PublishResponse;
 import cd.go.artifact.webdav.model.WebDavStoreConfig;
 
 /**
- * The {@link PublishArtifactHandler} is a request to the plugin to publish an artifact to the
- * specified artifact store.
+ * The {@link PublishArtifactHandler} is a request to the plugin to publish an
+ * artifact to the specified artifact store.
  * 
  * The request body will contain the following JSON elements:
  * 
@@ -85,18 +87,19 @@ public class PublishArtifactHandler implements RequestHandler {
   }
 
   /**
-   * The plugin is expected to return a json as shown. This json is written into a file called
-   * <plugin-id>.json on the agent and uploaded as a Build Artifact to the GoCD server to a
-   * directory called pluggable-artifact-metadata. This directory is never removed as part of
+   * The plugin is expected to return a json as shown. This json is written into
+   * a file called <plugin-id>.json on the agent and uploaded as a Build
+   * Artifact to the GoCD server to a directory called
+   * pluggable-artifact-metadata. This directory is never removed as part of
    * cleaning GoCD artifacts.
    * 
-   * The plugin is expected to return status 200 if it can understand the request.
+   * The plugin is expected to return status 200 if it can understand the
+   * request.
    * 
    * <pre>
    * {
    *   "metadata":{
-   *     "image":"gocd/gocd-demo:v23",
-   *     "digest":"sha256:f7840887b6f09f531935329a4ad1f6176866675873a8b3eed6a5894573da8247"
+   *     "location":"gocd/gocd-demo:v23"
    *   }
    * }
    * </pre>
@@ -120,16 +123,15 @@ public class PublishArtifactHandler implements RequestHandler {
 
       List<String> destinations = new ArrayList<>();
       for (FileMapper mapper : FileMapper.list(source, workingDir)) {
-        File file = mapper.getFile();
-        if (file.isFile()) {
-          String path = mapper.remap(target, params);
-          destinations.add(path);
-          webDav.uploadFile(storeConfig.getUrl(), path, file);
+        String path = mapper.remap(target, params);
+        destinations.add(path);
+        if (mapper.getFile().isFile()) {
+          webDav.uploadFile(storeConfig.getUrl(), path, mapper.getFile(), console);
         } else {
-          for (File f : file.listFiles()) {
-            String path = mapper.remap(target, params);
-            destinations.add(path);
-            webDav.uploadFiles(storeConfig.getUrl(), path, f);
+          webDav.createDirectories(storeConfig.getUrl(), path);
+          for (File file : mapper.getFile().listFiles()) {
+            String relativePath = String.format("%s/%s", path, file.getName());
+            webDav.uploadFiles(storeConfig.getUrl(), relativePath, file, console);
           }
         }
       }

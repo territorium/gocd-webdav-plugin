@@ -14,7 +14,6 @@
 
 package cd.go.artifact.webdav.handler;
 
-import com.google.gson.GsonBuilder;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
