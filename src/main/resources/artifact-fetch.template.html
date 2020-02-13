@@ -3,3 +3,12 @@
     <input ng-class="{'is-invalid-input': GOINPUTNAME[TARGET].$error.server}" type="text" ng-model="target" ng-required="true"/>
     <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[TARGET].$error.server}" ng-show="GOINPUTNAME[TARGET].$error.server">{{GOINPUTNAME[TARGET].$error.server}}</span>
 </div>
+
+<div class="form_item_block">
+	<label>Unpack:</label>
+	<label>Unpack:<span class="asterisk">*</span></label> <select
+		ng-model="unpack">
+		<option value="NONE">None</option>
+		<option value="UNPACK">Unpack</option>
+	</select>
+</div>
