@@ -25,19 +25,132 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import cd.go.artifact.Console;
 
+/**
+ * The {@link WebDAV} is an abstraction to the {@link Sardine} backend.
+ */
 public class WebDAV {
 
+  private final String  url;
   private final Sardine sardine;
 
-  public WebDAV(String username, String password) {
-    this.sardine = SardineFactory.begin(username, password);;
+  /**
+   * Constructs an instance of {@link WebDAV} without authentication.
+   *
+   * @param url
+   */
+  public WebDAV(String url) {
+    this(url, null, null);
   }
 
+  /**
+   * Constructs an instance of {@link WebDAV} with authentication.
+   *
+   * @param url
+   * @param username
+   * @param password
+   */
+  public WebDAV(String url, String username, String password) {
+    this.url = url;
+    this.sardine = SardineFactory.begin(username, password);
+  }
+
+  /**
+   * Get the URL for this connection.
+   */
+  public final String getUrl() {
+    return url;
+  }
+
+  /**
+   * Get the reference to the {@link Sardine} implementation.
+   */
   protected final Sardine getSardine() {
     return sardine;
+  }
+
+  /**
+   * Get the full URL to the resource.
+   * 
+   * @param path
+   */
+  protected final String getResource(String path) {
+    return String.format("%s/%s", url, path);
+  }
+
+  /**
+   * Return <code>true</code> if the resource already exists.
+   *
+   * @param path
+   */
+  public final boolean exists(String path) throws IOException {
+    return getSardine().exists(getResource(path));
+  }
+
+  /**
+   * Make all directories for the provided path.
+   * 
+   * @param path
+   */
+  public final void mkdirs(String path) throws IOException {
+    List<String> paths = new ArrayList<>();
+    for (String name : path.split("/")) {
+      if (!name.contains(".")) {
+        paths.add(name);
+        String resource = getResource(String.join("/", paths));
+        if (!getSardine().exists(resource)) {
+          getSardine().createDirectory(resource);
+        }
+      }
+    }
+  }
+
+  /**
+   * Fetches (PULL) a resource from remote storage.
+   *
+   * @param path
+   */
+  public final InputStream pull(String path) throws IOException {
+    return getSardine().get(getResource(path));
+  }
+
+  /**
+   * Publish (PUSH) a file to the remote storage.
+   *
+   * @param path
+   * @param file
+   */
+  public final void push(String path, File file) throws IOException {
+    try (InputStream stream = new FileInputStream(file)) {
+      getSardine().put(getResource(path), IOUtils.toByteArray(stream));
+    }
+  }
+
+  /**
+   * Push all local files recursively to the remote storage.
+   *
+   * @param path
+   * @param directory
+   */
+  public final void pushAll(String path, File directory) throws IOException {
+    for (File file : WebDAV.listSorted(directory)) {
+      String newPath = String.format("%s/%s", path, file.getName());
+      if (file.isDirectory()) {
+        if (!exists(newPath)) {
+          getSardine().createDirectory(getResource(newPath));
+        }
+        pushAll(newPath, file);
+      } else if (!exists(newPath)) {
+        push(newPath, file);
+      }
+    }
   }
 
   public final InputStream getInputStream(String url) throws IOException {
@@ -63,21 +176,6 @@ public class WebDAV {
     }
   }
 
-  /**
-   * Create all directories recursively.
-   *
-   * @param url
-   * @param path
-   */
-  public final void createDirectories(String url, String path) {
-    for (String name : path.split("/")) {
-      if (!name.contains(".")) {
-        url = String.format("%s/%s", url, name);
-        createDirectory(url);
-      }
-    }
-  }
-
   private boolean createDirectory(String resource) {
     try {
       if (!getSardine().exists(resource)) {
@@ -87,4 +185,20 @@ public class WebDAV {
     } catch (IOException e) {}
     return false;
   }
+
+  private static final List<File> listSorted(File directory) {
+    return Arrays.asList(directory.listFiles()).stream().sorted(DIRECTORY_FIRST).collect(Collectors.toList());
+  }
+
+  private static final Comparator<File> DIRECTORY_FIRST = new Comparator<File>() {
+
+    @Override
+    public int compare(File o1, File o2) {
+      if (o1.isDirectory() && !o2.isDirectory())
+        return -1;
+      if (!o1.isDirectory() && o2.isDirectory())
+        return 1;
+      return 0;
+    }
+  };
 }

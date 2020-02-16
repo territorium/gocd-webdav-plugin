@@ -1,14 +1,16 @@
 /*
  * Copyright 2018 ThoughtWorks, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
  */
 
@@ -19,6 +21,7 @@ import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,8 +38,8 @@ import cd.go.artifact.webdav.model.PublishRequest;
 import cd.go.artifact.webdav.model.WebDavStoreConfig;
 
 /**
- * The {@link PublishArtifactHandler} is a request to the plugin to publish an artifact to the
- * specified artifact store.
+ * The {@link PublishArtifactHandler} is a request to the plugin to publish an
+ * artifact to the specified artifact store.
  * 
  * The request body will contain the following JSON elements:
  * 
@@ -85,12 +88,14 @@ public class PublishArtifactHandler implements RequestHandler {
   }
 
   /**
-   * The plugin is expected to return a json as shown. This json is written into a file called
-   * <plugin-id>.json on the agent and uploaded as a Build Artifact to the GoCD server to a
-   * directory called pluggable-artifact-metadata. This directory is never removed as part of
+   * The plugin is expected to return a json as shown. This json is written into
+   * a file called <plugin-id>.json on the agent and uploaded as a Build
+   * Artifact to the GoCD server to a directory called
+   * pluggable-artifact-metadata. This directory is never removed as part of
    * cleaning GoCD artifacts.
    * 
-   * The plugin is expected to return status 200 if it can understand the request.
+   * The plugin is expected to return status 200 if it can understand the
+   * request.
    * 
    * <pre>
    * {
@@ -102,7 +107,6 @@ public class PublishArtifactHandler implements RequestHandler {
    */
   @Override
   public GoPluginApiResponse execute() {
-    String workingDir = request.getWorkingDir();
     ArtifactPlanConfig planConfig = request.getArtifactPlan().getPlanConfig();
     WebDavStoreConfig storeConfig = request.getArtifactStore().getStoreConfig();
 
@@ -110,32 +114,18 @@ public class PublishArtifactHandler implements RequestHandler {
     String target = planConfig.getTarget();
 
     try {
-      WebDAV webDav = new WebDAV(storeConfig.getUsername(), storeConfig.getPassword());
+      WebDAV webDav = new WebDAV(storeConfig.getUrl(), storeConfig.getUsername(), storeConfig.getPassword());
       if (!target.isEmpty()) {
-        webDav.createDirectories(storeConfig.getUrl(), target);
+        webDav.mkdirs(target);
       }
 
-      Map<String, String> params = Collections.singletonMap("BUILD", Build.getBuildNumber());
-
-      List<String> destinations = new ArrayList<>();
-      for (FileMapper mapper : FileMapper.list(source, workingDir)) {
-        String path = mapper.remap(target, params);
-        destinations.add(path);
-        if (mapper.getFile().isFile()) {
-          webDav.uploadFile(storeConfig.getUrl(), path, mapper.getFile(), console);
-        } else {
-          webDav.createDirectories(storeConfig.getUrl(), path);
-          for (File file : mapper.getFile().listFiles()) {
-            String relativePath = String.format("%s/%s", path, file.getName());
-            webDav.uploadFiles(storeConfig.getUrl(), relativePath, file, console);
-          }
-        }
-      }
+      String destination = "packages".equalsIgnoreCase(target) ? pushRepository(webDav, storeConfig, planConfig)
+          : pushLocation(webDav, storeConfig, planConfig);
 
       console.info("Source file '%s' pushed to WebDAV '%s'.", source, storeConfig.getUrl());
 
       Metadata response = new Metadata();
-      response.addMetadata("Location", destinations.get(0));
+      response.addMetadata("Location", destination);
       return DefaultGoPluginApiResponse.success(response.toString());
     } catch (Exception e) {
       console.error("Failed to publish %s: %s", request.getArtifactPlan(), e);
@@ -143,5 +133,45 @@ public class PublishArtifactHandler implements RequestHandler {
       return DefaultGoPluginApiResponse
           .error(String.format("Failed to publish %s: %s", request.getArtifactPlan(), e.getMessage()));
     }
+  }
+
+  protected final String pushLocation(WebDAV dav, WebDavStoreConfig storeConfig, ArtifactPlanConfig planConfig)
+      throws IOException {
+    Map<String, String> params = Collections.singletonMap("BUILD", Build.getBuildNumber());
+    List<String> destinations = new ArrayList<>();
+    String workingDir = request.getWorkingDir();
+    String source = planConfig.getSource();
+    String target = planConfig.getTarget();
+
+    for (FileMapper mapper : FileMapper.list(source, workingDir)) {
+      console.info("*** %s", mapper.getFile().getAbsolutePath());
+      String path = mapper.remap(target, params);
+      destinations.add(path);
+      if (mapper.getFile().isFile()) {
+        dav.uploadFile(storeConfig.getUrl(), path, mapper.getFile(), console);
+      } else {
+        dav.mkdirs(path);
+        for (File file : mapper.getFile().listFiles()) {
+          String relativePath = String.format("%s/%s", path, file.getName());
+          dav.uploadFiles(storeConfig.getUrl(), relativePath, file, console);
+        }
+      }
+    }
+    return destinations.get(0);
+  }
+
+  protected final String pushRepository(WebDAV dav, WebDavStoreConfig storeConfig, ArtifactPlanConfig planConfig)
+      throws IOException {
+    String source = planConfig.getSource();
+    String target = planConfig.getTarget();
+    String workingDir = request.getWorkingDir();
+
+    console.info("*** %s", new File(workingDir, source).getAbsolutePath());
+    for (FileMapper mapper : FileMapper.list(source, workingDir)) {
+      console.info("*** %s", mapper.getFile().getAbsolutePath());
+    }
+
+    dav.pushAll(target, new File(workingDir, source));
+    return String.format(dav.getUrl(), target);
   }
 }

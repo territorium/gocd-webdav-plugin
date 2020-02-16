@@ -66,7 +66,7 @@ public class FetchArtifactHandler implements RequestHandler {
       console.info("Retrieving file '%s' from WebDAV '%s'.", relativePath, storeConfig.getUrl());
 
       FetchResponse response = new FetchResponse();
-      WebDAV webDAV = new WebDAV(storeConfig.getUsername(), storeConfig.getPassword());
+      WebDAV webDAV = new WebDAV(storeConfig.getUrl(), storeConfig.getUsername(), storeConfig.getPassword());
       try (InputStream reader = webDAV.getInputStream(resource)) {
         Path path = Paths.get(relativePath);
         File file = new File(workingDir, path.getName(path.getNameCount() - 1).toString());
