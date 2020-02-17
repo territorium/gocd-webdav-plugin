@@ -1,16 +1,14 @@
 /*
  * Copyright 2018 ThoughtWorks, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
 
@@ -18,8 +16,6 @@ package cd.go.artifact.webdav;
 
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
-
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -129,7 +125,7 @@ public class WebDAV {
    */
   public final void push(String path, File file) throws IOException {
     try (InputStream stream = new FileInputStream(file)) {
-      getSardine().put(getResource(path), IOUtils.toByteArray(stream));
+      getSardine().put(getResource(path), stream);
     }
   }
 
@@ -160,7 +156,7 @@ public class WebDAV {
   public final void uploadFile(String url, String path, File file, Console console) throws IOException {
     try (InputStream stream = new FileInputStream(file)) {
       console.info(String.format(">>> %s/%s", url, path));
-      getSardine().put(String.format("%s/%s", url, path), IOUtils.toByteArray(stream));
+      getSardine().put(String.format("%s/%s", url, path), stream);
     }
   }
 
