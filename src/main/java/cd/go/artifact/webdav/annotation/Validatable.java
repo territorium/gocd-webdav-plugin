@@ -15,7 +15,6 @@
 package cd.go.artifact.webdav.annotation;
 
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ public interface Validatable {
 
   default List<ValidationError> validateAllFieldsAsRequired() {
     return toProperties().entrySet().stream()
-        .filter(entry -> StringUtils.isBlank(entry.getValue()) && !entry.getKey().equals("Destination")
+        .filter(entry -> Util.isBlank(entry.getValue()) && !entry.getKey().equals("Destination")
             && !entry.getKey().equals("Username") && !entry.getKey().equals("Password"))
         .map(entry -> new ValidationError(entry.getKey(), entry.getKey() + " must not be blank."))
         .collect(Collectors.toList());

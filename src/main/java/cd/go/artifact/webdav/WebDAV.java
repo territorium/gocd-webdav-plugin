@@ -1,14 +1,16 @@
 /*
  * Copyright 2018 ThoughtWorks, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
  */
 
@@ -35,26 +37,30 @@ import cd.go.artifact.Console;
 public class WebDAV {
 
   private final String  url;
+  private final Console console;
   private final Sardine sardine;
 
   /**
    * Constructs an instance of {@link WebDAV} without authentication.
    *
    * @param url
+   * @param console
    */
-  public WebDAV(String url) {
-    this(url, null, null);
+  public WebDAV(String url, Console console) {
+    this(url, console, null, null);
   }
 
   /**
    * Constructs an instance of {@link WebDAV} with authentication.
    *
    * @param url
+   * @param console
    * @param username
    * @param password
    */
-  public WebDAV(String url, String username, String password) {
+  public WebDAV(String url, Console console, String username, String password) {
     this.url = url;
+    this.console = console;
     this.sardine = SardineFactory.begin(username, password);
   }
 
@@ -125,6 +131,7 @@ public class WebDAV {
    */
   public final void push(String path, File file) throws IOException {
     try (InputStream stream = new FileInputStream(file)) {
+      console.info("Push file '%s' to '%s'", file, path);
       getSardine().put(getResource(path), stream);
     }
   }
@@ -140,46 +147,14 @@ public class WebDAV {
       String newPath = String.format("%s/%s", path, file.getName());
       if (file.isDirectory()) {
         if (!exists(newPath)) {
+          console.info("Create remote directory '%s'", newPath);
           getSardine().createDirectory(getResource(newPath));
         }
         pushAll(newPath, file);
-      } else if (!exists(newPath)) {
+      } else {
         push(newPath, file);
       }
     }
-  }
-
-  public final InputStream getInputStream(String url) throws IOException {
-    return getSardine().get(url);
-  }
-
-  public final void uploadFile(String url, String path, File file, Console console) throws IOException {
-    try (InputStream stream = new FileInputStream(file)) {
-      console.info(String.format(">>> %s/%s", url, path));
-      getSardine().put(String.format("%s/%s", url, path), stream);
-    }
-  }
-
-  public final void uploadFiles(String url, String path, File file, Console console) throws IOException {
-    if (file.isDirectory()) {
-      String resource = String.format("%s/%s", path, file.getName());
-      createDirectory(resource);
-      for (File f : file.listFiles()) {
-        uploadFiles(url, resource, f, console);
-      }
-    } else {
-      uploadFile(url, path, file, console);
-    }
-  }
-
-  private boolean createDirectory(String resource) {
-    try {
-      if (!getSardine().exists(resource)) {
-        getSardine().createDirectory(resource);
-        return true;
-      }
-    } catch (IOException e) {}
-    return false;
   }
 
   private static final List<File> listSorted(File directory) {
@@ -194,7 +169,11 @@ public class WebDAV {
         return -1;
       if (!o1.isDirectory() && o2.isDirectory())
         return 1;
-      return 0;
+      if (o1.isDirectory() && o2.isDirectory())
+        return 0;
+
+      // due bug in mod_dav on filename paths
+      return Integer.valueOf(o1.getName().length()).compareTo(Integer.valueOf(o2.getName().length()));
     }
   };
 }
