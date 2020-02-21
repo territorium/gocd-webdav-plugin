@@ -15,13 +15,15 @@
 
 package cd.go.artifact.util;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * The {@link Build} class.
  */
 public abstract class Build {
+
+  private static final DateTimeFormatter BUILD = DateTimeFormatter.ofPattern("YYMMddhh");
 
   /**
    * Constructs an instance of {@link Build}.
@@ -33,7 +35,9 @@ public abstract class Build {
    * Get a day build number.
    */
   public static String getBuildNumber() {
-    long value = OffsetDateTime.now().toInstant().getEpochSecond() - Instant.EPOCH.getEpochSecond();
-    return String.format("%s", value / (60 * 60 * 24));
+    // long value = OffsetDateTime.now().toInstant().getEpochSecond() -
+    // Instant.EPOCH.getEpochSecond();
+    // return String.format("%s", value / (60 * 60 * 24));
+    return OffsetDateTime.now().format(BUILD);
   }
 }
