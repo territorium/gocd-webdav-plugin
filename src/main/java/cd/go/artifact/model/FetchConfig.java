@@ -26,14 +26,9 @@ public class FetchConfig extends JsonBuilder {
 
 
   private String target;
-  private String unpack;
 
   public final String getTarget() {
     return target;
-  }
-
-  public final String getUnpack() {
-    return unpack;
   }
 
   @Override
@@ -43,12 +38,12 @@ public class FetchConfig extends JsonBuilder {
     if (o == null || getClass() != o.getClass())
       return false;
     FetchConfig that = (FetchConfig) o;
-    return Objects.equals(target, that.target) && Objects.equals(unpack, that.unpack);
+    return Objects.equals(target, that.target);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(target, unpack);
+    return Objects.hash(target);
   }
 
   /**
@@ -57,7 +52,6 @@ public class FetchConfig extends JsonBuilder {
   public final JsonValue build() {
     JsonObjectBuilder builder = Json.createObjectBuilder();
     builder.add("target", target);
-    builder.add("unpack", unpack);
     return builder.build();
   }
 
@@ -69,6 +63,5 @@ public class FetchConfig extends JsonBuilder {
   public final void parse(JsonValue json) {
     JsonObject object = json.asJsonObject();
     target = object.getString("target");
-    unpack = object.getString("unpack");
   }
 }

@@ -43,7 +43,6 @@ public class FetchArtifactMetadataHandler implements RequestHandler {
     meta.add("secure", false);
 
     object = Json.createObjectBuilder();
-    object.add("key", "unpack");
     object.add("metadata", meta);
     array.add(object);
 

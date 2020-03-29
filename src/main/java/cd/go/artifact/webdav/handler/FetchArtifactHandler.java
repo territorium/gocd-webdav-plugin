@@ -31,7 +31,6 @@ import cd.go.artifact.Console;
 import cd.go.artifact.RequestHandler;
 import cd.go.artifact.model.FetchRequest;
 import cd.go.artifact.model.FetchResponse;
-import cd.go.artifact.util.Archive;
 import cd.go.artifact.webdav.WebDAV;
 import cd.go.artifact.webdav.model.StoreConfig;
 
@@ -79,10 +78,6 @@ public class FetchArtifactHandler implements RequestHandler {
         }
 
         console.info("File '%s' stored.", file.getAbsolutePath());
-
-        if ("UNPACK".equalsIgnoreCase(request.getFetchConfig().getUnpack())) {
-          Archive.unpack(file);
-        }
 
       }
       console.info("Source '%s' successfully pulled from WebDAV '%s'.", relativePath, storeConfig.getUrl());
