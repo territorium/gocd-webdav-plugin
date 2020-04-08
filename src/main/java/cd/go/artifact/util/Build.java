@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
  */
 public abstract class Build {
 
-  private static final DateTimeFormatter BUILD = DateTimeFormatter.ofPattern("YYMMddhh");
+  private static final DateTimeFormatter BUILD = DateTimeFormatter.ofPattern("YYMMddHH");
 
   /**
    * Constructs an instance of {@link Build}.
