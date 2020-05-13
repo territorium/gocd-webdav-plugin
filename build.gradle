@@ -31,14 +31,14 @@ def gitRevision = { ->
 project.ext.gitRevision = gitRevision()
 
 group = 'tol.info.gocd.plugin'
-version = '1.1.1'
+version = '1.1.2'
 
 // these values that go into plugin.xml
 project.ext.pluginDesc = [
   id         : 'cd.go.artifact.webdav',
   version    : project.version,
   goCdVersion: '18.7.0',
-  name       : 'Artifact plugin for WebDAV',
+  name       : 'WebDAV Artifact Plugin for GoCD',
   description: 'Plugin allows to push/pull artifacts using WebDAV',
   vendorName : 'TOL GmbH',
   vendorUrl  : 'https://github.com/territorium/gocd-webdav-artifact-plugin.git'
