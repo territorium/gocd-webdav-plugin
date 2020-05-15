@@ -22,7 +22,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,30 +61,15 @@ public class FileMapper {
    *
    * @param target
    */
-  public final String remap(String target) {
-    return remap(target, Collections.emptyMap());
-  }
-
-  /**
-   * Replaces the indexed or named placeholder's with the the parameter values. The indexed values
-   * are provided by the {@link FileMapper} self, the named values are provided from outside.
-   *
-   * @param target
-   * @param params
-   */
-  public String remap(String target, Map<String, String> params) {
+  public String remap(String target) {
     StringBuffer buffer = new StringBuffer();
 
     int offset = 0;
     Matcher matcher = PARAMS.matcher(target);
     while (matcher.find()) {
-      String name = matcher.group(3);
       int index = (matcher.group(2) == null) ? -1 : Integer.parseInt(matcher.group(2));
-
       buffer.append(target.substring(offset, matcher.start(1) - 1));
-      if (name != null && params.containsKey(name)) {
-        buffer.append(params.get(name));
-      } else if (index > 0 && index <= indexes.size()) {
+      if (index > 0 && index <= indexes.size()) {
         buffer.append(indexes.get(index - 1));
       }
       offset = matcher.end(1);

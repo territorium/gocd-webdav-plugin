@@ -19,14 +19,11 @@ import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import cd.go.artifact.Console;
 import cd.go.artifact.RequestHandler;
 import cd.go.artifact.model.Metadata;
-import cd.go.artifact.util.Build;
 import cd.go.artifact.util.FileMapper;
 import cd.go.artifact.webdav.WebDAV;
 import cd.go.artifact.webdav.model.ArtifactPlanConfig;
@@ -115,9 +112,8 @@ public class PublishArtifactHandler implements RequestHandler {
       }
 
       List<String> destinations = new ArrayList<>();
-      Map<String, String> params = Collections.singletonMap("BUILD", Build.getBuildNumber());
       for (FileMapper mapper : FileMapper.list(source, workingDir)) {
-        String path = mapper.remap(target, params);
+        String path = mapper.remap(target);
         destinations.add(path);
         if (mapper.getFile().isFile()) {
           webDav.push(path, mapper.getFile());
