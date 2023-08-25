@@ -75,6 +75,9 @@ public class FileMapper {
       offset = matcher.end(1);
     }
     buffer.append(target.substring(offset, target.length()));
+    if (target.endsWith("/")) {
+      buffer.append(file.getName());
+    }
     return buffer.toString();
   }
 
